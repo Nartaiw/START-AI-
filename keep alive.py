@@ -1,27 +1,21 @@
 import os
-import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from aiohttp import web
 
-class AliveHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/plain; charset=utf-8")
-        self.end_headers()
-        self.wfile.write(b"Bot is alive and running!")
+async def handle(request):
+    # Отвечаем Render и UptimeRobot
+    return web.Response(text="Bot is alive and running!")
 
-    def log_message(self, format, *args):
-        return
-
-def run_keep_alive_server():
-    # Render передает нужный порт в переменную PORT. Если её нет, используем 8080
+async def start_keep_alive_server():
+    app = web.Application()
+    app.router.add_get('/', handle)
+    
+    # Получаем порт от Render
     port = int(os.getenv("PORT", 8080))
     
-    server = HTTPServer(('0.0.0.0', port), AliveHandler)
-    server.serve_forever()
-
-def keep_alive():
-    """Функция для запуска сервера в фоновом потоке"""
-    print("⏳ Запуск фонового веб-сервера Keep-Alive...")
-    t = threading.Thread(target=run_keep_alive_server, daemon=True)
-    t.start()
-    print("🌐 Веб-сервер успешно инициализирован")
+    runner = web.AppRunner(app)
+    await runner.setup()
+    
+    # Запускаем веб-сервер на нужном порту
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+    print(f"🌐 Фоновый веб-сервер aiohttp запущен на порту {port}")
