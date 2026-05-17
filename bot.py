@@ -450,14 +450,20 @@ async def on_text(message: types.Message):
     await stream_reply(message, uid)
 
 # ── Запуск ────────────────────────────────────
-async def main():
-    # 1. Запускаем асинхронный веб-сервер
-    await start_keep_alive_server()
-
-    # 2. Запускаем Telegram-бота
-    print("✅ Бот успешно инициализирован!")
+async def start_bot():
+    print("✅ Бот запускается...")
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
+async def main():
+    # Запускаем сервер и бота одновременно
+    await asyncio.gather(
+        start_keep_alive_server(),
+        start_bot()
+    )
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        print("Бот остановлен")
