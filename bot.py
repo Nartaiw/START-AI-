@@ -447,16 +447,13 @@ async def on_text(message: types.Message):
 
 # ── Запуск ────────────────────────────────────
 async def main():
-    # 1. Запуск фонового веб-сервера Keep-Alive
-    print("⏳ Запуск веб-сервера Keep-Alive...")
-    keep_alive_thread = threading.Thread(target=run_keep_alive_server, daemon=True)
-    keep_alive_thread.start()
-    print("🌐 Веб-сервер запущен на порту 8080")
+    # 1. Запускаем асинхронный веб-сервер
+    await start_keep_alive_server()
 
-async def main():
-    print("✅ Бот запущен!")
-    bot = Bot(token=BOT_TOKEN)
-    dp = Dispatcher()
+    # 2. Запускаем Telegram-бота
+    print("✅ Бот успешно инициализирован!")
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
     asyncio.run(main())
