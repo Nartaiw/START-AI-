@@ -10,8 +10,6 @@ from aiogram.types import (
     ReplyKeyboardMarkup, KeyboardButton
 )
 from openai import AsyncOpenAI  # ИМПОРТ ИСПРАВЛЕН ТУТ!
-from keep_alive import start_keep_alive_server
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
@@ -458,7 +456,6 @@ async def start_bot():
 async def main():
     # Запускаем сервер и бота одновременно
     await asyncio.gather(
-        start_keep_alive_server(),
         start_bot()
     )
 
